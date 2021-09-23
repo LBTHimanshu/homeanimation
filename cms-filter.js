@@ -31,7 +31,8 @@ class WORKFLOW {
 
     // filter out cards based on categories.
     renderFiltered(showOnNiche) {
-        this.appData.categoryData.forEach((category) => {
+        this.wrapper.innerHTML = '';
+        this.appData.categoryData.filter((category) => category.showOnNiche === showOnNiche).forEach((category) => {
             const cardsHtml = this.loadCards(this.appData.cardData, category.categorySlug, showOnNiche)
             const headHtml = this.loadHead(category, showOnNiche);
             const cardContainerHtml = this.loadCardContainer(cardsHtml);
@@ -42,12 +43,14 @@ class WORKFLOW {
     // function to load cards.
     loadCards(data, categoryName, nicheName) {
         const CARDHTML = data.filter((card) => card.showOn === categoryName && card.showOnNiche === nicheName).map((card) => {
-            return `<div role="listitem" class="workflow-card">
-        <img src=${card.cardImgSrc} loading="lazy" alt="" class="workflow-card-img">
-        <p class="para-16 workflow-card-head">${card.cardName}</p>
-        <p class="para-16 workflow-card-para">${card.cardDetails}</p>
-        <a href="#" class="know-more-link card-link">KNOW MORE</a>
-        </div>`.toString().split(',').join('');
+            if (card != null) {
+                return `<div role="listitem" class="workflow-card">
+            <img src=${card.cardImgSrc} loading="lazy" alt="" class="workflow-card-img">
+            <p class="para-16 workflow-card-head">${card.cardName}</p>
+            <p class="para-16 workflow-card-para">${card.cardDetails}</p>
+            <a href="#" class="know-more-link card-link">KNOW MORE</a>
+            </div>`.toString().split(',').join('');
+            }
         });
         return CARDHTML;
     }
@@ -61,7 +64,7 @@ class WORKFLOW {
 
     // function to add cards and heading into the container.
     loadCardContainer(cards) {
-        if (cards.length != 0) {   
+        if (cards.length != 0) {
             let container = document.createElement('div');
             container.className = "right-bottom-block";
             cards.forEach(card => {
@@ -78,23 +81,43 @@ class WORKFLOW {
             let line = document.createElement("div");
             headCardWrapper.classList.add("right-workflow-wrapper");
             line.classList.add("horizontal-line");
+            line.classList.add("line");
             headCardWrapper.id = category.categorySlug;
-            headCardWrapper.innerHTML += headHtml;
+            headCardWrapper.innerHTML = headHtml;
             headCardWrapper.appendChild(cardContainer);
             headCardWrapper.appendChild(line);
-            this.wrapper.appendChild(headCardWrapper)
+            this.wrapper.appendChild(headCardWrapper);
+            this.cardEvents();
         }
         else if (headHtml == undefined && cardContainer == undefined) {
             let headCardWrapper = document.querySelectorAll(".right-workflow-wrapper");
-            headCardWrapper.forEach(wrp => {
-                console.log(wrp)
+            headCardWrapper.forEach((wrp) => {
                 if (wrp.id == category.categorySlug) {
-                   wrp.innerHTML = "";
+                    let Ele = document.getElementById(wrp.id);
+                    let parent = Ele.parentElement;
+                    parent.removeChild(wrp);
                 }
             })
         }
-       
+
     }
+
+    // function to listen card events
+    cardEvents() {
+        let cards = document.querySelectorAll(".workflow-card")
+        cards.forEach(card => {
+            card.addEventListener("mouseover", (eve) => {
+                let targetEle = eve.currentTarget;
+                let link = targetEle.childNodes[7];
+                link.style.opacity = 1;
+            })
+            card.addEventListener("mouseout", (eve) => {
+                let targetEle = eve.currentTarget;
+                let link = targetEle.childNodes[7];
+                link.style.opacity = 0;
+            })
+        })
+    };
 
     // function to listen to events.
     listenToEvent() {
