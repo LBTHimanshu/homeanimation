@@ -16,17 +16,23 @@ class RATING {
             btn.addEventListener("click", (e) => {
                 let btnVal = e.currentTarget.dataset.btn;
                 if (btnVal === "first") {
+                    setTimeout(() => {
+                        let formTop = document.getElementsByClassName("section-anim-form")[0];
+                        let elDistanceToTop = window.pageYOffset + formTop.getBoundingClientRect().top;
+                        window.scrollTo({
+                            top: elDistanceToTop - 110,
+                            behavior: 'smooth'
+                        });
+                    }, 500);
+                }
+                setTimeout(() => {
+                    let formTop = document.getElementsByClassName("section-anim-form-bottom")[0];
+                    let elDistanceToTop = window.pageYOffset + formTop.getBoundingClientRect().top;
                     window.scrollTo({
-                        top: 398,
+                        top: elDistanceToTop - 110,
                         behavior: 'smooth'
                     });
-                }
-                if (btnVal === "second") {
-                window.scrollTo({
-                    top: 1742+398,
-                    behavior: 'smooth'
-                });
-            }
+                }, 500);
             })
         })
     }
