@@ -44,12 +44,12 @@ class WORKFLOW {
     loadCards(data, categoryName, nicheName) {
         const CARDHTML = data.filter((card) => card.showOn === categoryName && card.showOnNiche === nicheName).map((card) => {
             if (card != null) {
-                return `<div role="listitem" class="workflow-card">
+                return `<a href="${card.link}" role="listitem" class="workflow-card">
             <img src=${card.cardImgSrc} loading="lazy" alt="" class="workflow-card-img">
             <p class="para-16 workflow-card-head">${card.cardName}</p>
             <p class="para-16 workflow-card-para">${card.cardDetails}</p>
-            <a href="#" class="know-more-link card-link">KNOW MORE</a>
-            </div>`.toString().split(',').join('');
+            <p class="know-more-link card-link">KNOW MORE</p>
+            </a>`.toString().split(',').join('');
             }
         });
         return CARDHTML;
@@ -148,7 +148,7 @@ class WORKFLOW {
     // get the niches DOM.
     getCategoryDom(data, categoryName) {
         const CATDOM = data.filter((category) => category.showOnNiche === categoryName).map((category) => {
-            return `<a href="#${category.categorySlug}" role="listitem" class="categories-block flexbox"><img src=${category.categoryImg} loading="lazy" alt="${categoryName}" class="catrgory-img"><p class="para-16 para-category">${category.categoryTitle}</p></a>`.toString().split(',').join('');
+            return `<a href="#" data-id="${category.categorySlug}" role="listitem" class="categories-block flexbox"><img src=${category.categoryImg} loading="lazy" alt="${categoryName}" class="catrgory-img"><p class="para-16 para-category">${category.categoryTitle}</p></a>`.toString().split(',').join('');
         });
         return CATDOM;
     }
@@ -163,12 +163,27 @@ class WORKFLOW {
         if (catBlock.length != 0) {
             catBlock[0].classList.add("active-left-border");
             catBlock.forEach(cat => {
-                cat.addEventListener("click", (eve) => this.removeActive(eve))
+                cat.addEventListener("click", (eve) => {
+                    this.removeActive(eve);
+                    let id = eve.currentTarget.dataset.id;
+                    this.scrollFromTop(id);
+                })
             })
         }
 
     }
 
+    // scroll the page when clicked on any category.
+    scrollFromTop(id){
+        let el = document.getElementById(id);
+        let elDistanceToTop = window.pageYOffset + el.getBoundingClientRect().top;
+        window.scrollTo({
+            top: elDistanceToTop - 110,
+            behavior: 'smooth'
+        });
+    }
+
+    // add the left border into the categories.
     removeActive(eve) {
         let box = eve.currentTarget.closest(".flexbox");
         document.querySelectorAll(".categories-block.flexbox").forEach(cat => {
