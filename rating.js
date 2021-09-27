@@ -25,14 +25,16 @@ class RATING {
                         });
                     }, 500);
                 }
-                setTimeout(() => {
-                    let formTop = document.getElementsByClassName("section-anim-form-bottom")[0];
-                    let elDistanceToTop = window.pageYOffset + formTop.getBoundingClientRect().top;
-                    window.scrollTo({
-                        top: elDistanceToTop - 110,
-                        behavior: 'smooth'
-                    });
-                }, 500);
+                else if (btnVal === "second") {
+                    setTimeout(() => {
+                        let formTop = document.getElementsByClassName("section-anim-form-bottom")[0];
+                        let elDistanceToTop = window.pageYOffset + formTop.getBoundingClientRect().top;
+                        window.scrollTo({
+                            top: elDistanceToTop - 110,
+                            behavior: 'smooth'
+                        });
+                    }, 500);
+                }
             })
         })
     }
