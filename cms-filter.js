@@ -58,7 +58,7 @@ class WORKFLOW {
     // function to load heading of the card container.
     loadHead(category, showOnNiche) {
         if (category.showOnNiche == showOnNiche) {
-            return `<div class="right-top-block"><h2 class="workflow-heading">${category.categoryTitle}</h2><p class="para-16">${category.categoryDesc}</p></div>`;
+            return `<div class="right-top-block"><h2 class="workflow-heading">${category.categoryTitle}</h2><p class="para-16 width-60">${category.categoryDesc}</p></div>`;
         }
     }
 
