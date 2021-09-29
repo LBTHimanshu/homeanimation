@@ -162,9 +162,11 @@ class WORKFLOW {
         let catBlock = document.querySelectorAll(".categories-block.flexbox");
         if (catBlock.length != 0) {
             catBlock[0].classList.add("active-left-border");
+            catBlock[0].children[1].classList.add("active-para");
             catBlock.forEach(cat => {
                 cat.addEventListener("click", (eve) => {
                     this.removeActive(eve);
+                    cat.children[1].classList.add("active-para")
                     let id = eve.currentTarget.dataset.id;
                     this.scrollFromTop(id);
                 })
@@ -187,11 +189,12 @@ class WORKFLOW {
     removeActive(eve) {
         let box = eve.currentTarget.closest(".flexbox");
         document.querySelectorAll(".categories-block.flexbox").forEach(cat => {
-            if (cat.classList.contains("active-left-border")) {
+            if (cat.classList.contains("active-left-border") && (cat.children[1].classList.contains("active-para"))) {
                 cat.classList.remove("active-left-border");
+                cat.children[1].classList.remove("active-para")
             }
         })
-        box.classList.add("active-left-border")
+        box.classList.add("active-left-border");
     }
 
 }
