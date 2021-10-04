@@ -2,7 +2,12 @@ class FROMVALIDATION {
     constructor(form) {
         this.form = form;
         this.elements = this.form.querySelectorAll("[custom-validate='true']");
-        this.button =this.form.querySelector(".submit-button");
+        this.button = this.form.querySelector("[submit-btn='true']");
+        this.errorBlock = this.form.parentElement.querySelector(".error-block");
+        this.name = null;
+        this.email = null;
+        this.number = null;
+        this.message = null;
         this.errorMessageObj = {
 
         }
@@ -11,7 +16,8 @@ class FROMVALIDATION {
 
     init() {
         this.elementToValidate();
-        this.formSubmitEvent(this.form);
+        this.formSubmitEvent(this.button);
+        this.buttonEvent(this.button);
     }
 
     // function send elements to validate.
@@ -84,7 +90,7 @@ class FROMVALIDATION {
             default:
                 break;
         }
-        
+
     }
 
     // function to handle name validation.
@@ -92,22 +98,26 @@ class FROMVALIDATION {
         if (required == "true") {
             let range = validator.split("-");
             if (value.length > parseInt(range[0]) && value.length < parseInt(range[1])) {
+                this.name = value;
                 return false;
             }
-            else{
+            else {
+                this.name = null;
                 return true;
             }
         }
     }
-    
+
     // function to handle email validation.
     validateEmail(value, validator, required) {
         if (required == "true") {
             let range = validator;
             if (value != "" && value != null && value.length > 3 && value.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)$/)) {
+                this.email = value;
                 return false;
             }
-            else{
+            else {
+                this.email = null;
                 return true;
             }
         }
@@ -118,9 +128,11 @@ class FROMVALIDATION {
         if (required == "true") {
             let range = validator;
             if (value != "" && value != null && value.length > 10 && value.match(/^\+91 +[0-9]{10}$/)) {
+                this.number = value;
                 return false;
             }
-            else{
+            else {
+                this.number = null;
                 return true;
             }
         }
@@ -131,9 +143,11 @@ class FROMVALIDATION {
         if (required == "true") {
             let range = validator.split("-");
             if (value.length > parseInt(range[0]) && value.length < parseInt(range[1])) {
+                this.message = value;
                 return false;
             }
-            else{
+            else {
+                this.message = null;
                 return true;
             }
         }
@@ -141,50 +155,72 @@ class FROMVALIDATION {
 
 
     // function to show error message.
-    showErrorMessage(inpType){
+    showErrorMessage(inpType) {
         const error = this.errorMessageObj[inpType].errorMsg;
-        const element =  this.errorMessageObj[inpType].element;
+        const element = this.errorMessageObj[inpType].element;
 
         if (!error) {
+
             if (!element.classList.contains("valid")) {
                 element.classList.remove("invalid");
                 element.classList.add("valid");
             }
-            else{
+            else {
                 element.classList.remove("invalid");
                 element.classList.add("valid");
             }
         }
-        else{
+        else {
             if (!element.classList.contains("invalid")) {
                 element.classList.remove("valid");
                 element.classList.add("invalid");
             }
-            else{
+            else {
                 element.classList.remove("valid");
                 element.classList.add("invalid");
             }
         }
     }
 
+    // enable and disable button;
+    buttonEvent(btn) {
+        btn.addEventListener("mouseover", () => {
+            if (this.name != null && this.email != null && this.number != null && this.message != null) {
+                this.button.classList.remove("not-allowed")
+            }
+            else {
+                this.button.classList.add("not-allowed");
+            }
+        })
+    }
     // form submit event.
-    formSubmitEvent(form){
-        form.addEventListener("submit", (evt) => {
-            for(let errors in this.errorMessageObj){
-                if(this.errorMessageObj[errors].errorMsg){
-                    this.button.classList.remove("success");
-                    this.button.classList.add("failed");
-                    this.button.value = "Something went wrong!";
-                    evt.preventDefault();
-                }
-                this.button.classList.remove("failed");
-                this.button.classList.add("success");
-                this.button.value = "Message sent.";
+    formSubmitEvent(btn) {
+        btn.addEventListener("click", (evt) => {
+            evt.preventDefault();
+            if (this.name != null && this.email != null && this.number != null && this.message != null) {
+                setTimeout(() => {
+                    if (this.errorBlock != null) {
+                        if (this.errorBlock.style.display != "block") {
+                            this.button.classList.remove("failed");
+                            this.button.classList.add("success");
+                            this.button.innerHTML = "Message sent.";
+                        }
+                        else {
+                            this.button.classList.add("failed");
+                            this.button.classList.remove("success");
+                            this.button.innerHTML = "Something went wrong!";
+                            location.reload();
+                        }
+                    }
+                }, 100)
+                this.form.requestSubmit();
+            }
+            else if (this.name == null || this.email == null || this.number == null || this.message == null) {
+                return false;
             }
         })
     }
 }
-
 const FORM = document.querySelectorAll("[data-form]");
 FORM.forEach(form => {
     new FROMVALIDATION(form);
