@@ -7,6 +7,7 @@ class FROMVALIDATION {
         this.name = null;
         this.email = null;
         this.number = null;
+        this.gender = null;
         this.message = null;
         this.errorMessageObj = {
 
@@ -88,6 +89,14 @@ class FROMVALIDATION {
                 this.showErrorMessage(identifier);
                 break;
 
+            case "radio":
+                this.errorMessageObj[identifier] = {
+                    errorMsg: this.validateRadio(value, validator, required),
+                    element: element,
+                }
+                this.showErrorMessage(identifier);
+                break;
+
             default:
                 break;
         }
@@ -154,6 +163,19 @@ class FROMVALIDATION {
         }
     }
 
+    validateRadio(value, validator, required) {
+        if (required == "true") {
+            let range = validator;
+            if (value === "male" || value === "female") {
+                this.gender = value;
+                return false;
+            }
+            else {
+                this.gender = null;
+                return true;
+            }
+        }
+    }
 
     // function to show error message.
     showErrorMessage(inpType) {
@@ -186,7 +208,7 @@ class FROMVALIDATION {
     // enable and disable button;
     buttonEvent(btn) {
         btn.addEventListener("mouseover", () => {
-            if (this.name != null && this.email != null && this.number != null && this.message != null) {
+            if (this.name != null && this.email != null && this.number != null && this.gender != null && this.message != null) {
                 this.button.classList.remove("not-allowed")
             }
             else {
@@ -198,7 +220,7 @@ class FROMVALIDATION {
     formSubmitEvent(btn) {
         btn.addEventListener("click", (evt) => {
             evt.preventDefault();
-            if (this.name != null && this.email != null && this.number != null && this.message != null) {
+            if (this.name != null && this.email != null && this.number != null && this.gender != null && this.message != null) {
                 setTimeout(() => {
                     if (this.errorBlock != null) {
                         if (this.errorBlock.style.display != "block") {
@@ -216,7 +238,7 @@ class FROMVALIDATION {
                 }, 100)
                 this.form.requestSubmit();
             }
-            else if (this.name == null || this.email == null || this.number == null || this.message == null) {
+            else if (this.name == null || this.email == null || this.number == null || this.gender == null || this.message == null) {
                 return false;
             }
         })
