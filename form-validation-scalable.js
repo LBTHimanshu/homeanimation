@@ -53,38 +53,39 @@ class FROMVALIDATION {
 
     // function to handle validation.
     handleValidation(element) {
-        const inpType = element.dataset;
+        const inpType = element.getAttribute("input-type");;
         const validator = element.getAttribute("validateby");
         const required = element.getAttribute("isrequired");
+        const identifier = element.getAttribute("identifier");
         const value = element.value;
-        switch (inpType.name) {
-            case "Name":
-                this.errorMessageObj[inpType.name] = {
+        switch (inpType) {
+            case "name":
+                this.errorMessageObj[identifier] = {
                     errorMsg: this.validateName(value, validator, required),
                     element: element,
                 }
-                this.showErrorMessage(inpType.name);
+                this.showErrorMessage(identifier);
                 break;
-            case "Email":
-                this.errorMessageObj[inpType.name] = {
+            case "email":
+                this.errorMessageObj[identifier] = {
                     errorMsg: this.validateEmail(value, validator, required),
                     element: element,
                 }
-                this.showErrorMessage(inpType.name);
+                this.showErrorMessage(identifier);
                 break;
-            case "Number":
-                this.errorMessageObj[inpType.name] = {
+            case "number":
+                this.errorMessageObj[identifier] = {
                     errorMsg: this.validateNumber(value, validator, required),
                     element: element,
                 }
-                this.showErrorMessage(inpType.name);
+                this.showErrorMessage(identifier);
                 break;
-            case "Message":
-                this.errorMessageObj[inpType.name] = {
+            case "message":
+                this.errorMessageObj[identifier] = {
                     errorMsg: this.validateMessage(value, validator, required),
                     element: element,
                 }
-                this.showErrorMessage(inpType.name);
+                this.showErrorMessage(identifier);
                 break;
 
             default:
