@@ -218,25 +218,38 @@ class FROMVALIDATION {
     showErrorMessage(inpType) {
         const error = this.errorMessageObj[inpType].errorMsg;
         const element = this.errorMessageObj[inpType].element;
-
+        let parentElement = element.parentElement;
+        let errorBlock = parentElement.querySelector(".error-lable");
         if (!error) {
             if (!element.classList.contains("valid")) {
                 element.classList.remove("invalid");
                 element.classList.add("valid");
+                if (errorBlock != null) {
+                    errorBlock.classList.remove("show");
+                }
             }
             else {
                 element.classList.remove("invalid");
                 element.classList.add("valid");
+                if (errorBlock != null) {
+                    errorBlock.classList.remove("show");
+                }
             }
         }
         else {
             if (!element.classList.contains("invalid")) {
                 element.classList.remove("valid");
                 element.classList.add("invalid");
+                if (errorBlock != null) {
+                    errorBlock.classList.add("show");
+                }
             }
             else {
                 element.classList.remove("valid");
                 element.classList.add("invalid");
+                if (errorBlock != null) {
+                    errorBlock.classList.add("show");
+                }
             }
         }
     }
