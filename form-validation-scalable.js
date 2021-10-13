@@ -8,6 +8,8 @@ class FROMVALIDATION {
         this.email = null;
         this.number = null;
         this.gender = null;
+        this.subscription = null;
+        this.profession = null;
         this.message = null;
         this.errorMessageObj = {
 
@@ -69,14 +71,14 @@ class FROMVALIDATION {
                 break;
             case "email":
                 this.errorMessageObj[identifier] = {
-                    errorMsg: this.validateEmail(value, validator, required),
+                    errorMsg: this.validateEmail(value, required),
                     element: element,
                 }
                 this.showErrorMessage(identifier);
                 break;
             case "number":
                 this.errorMessageObj[identifier] = {
-                    errorMsg: this.validateNumber(value, validator, required),
+                    errorMsg: this.validateNumber(value, required),
                     element: element,
                 }
                 this.showErrorMessage(identifier);
@@ -91,7 +93,23 @@ class FROMVALIDATION {
 
             case "radio":
                 this.errorMessageObj[identifier] = {
-                    errorMsg: this.validateRadio(value, validator, required),
+                    errorMsg: this.validateRadio(value, required),
+                    element: element,
+                }
+                this.showErrorMessage(identifier);
+                break;
+
+            case "subscription":
+                this.errorMessageObj[identifier] = {
+                    errorMsg: this.validateSubscription(element),
+                    element: element,
+                }
+                this.showErrorMessage(identifier);
+                break;
+
+            case "selection":
+                this.errorMessageObj[identifier] = {
+                    errorMsg: this.validateProfession(value, required),
                     element: element,
                 }
                 this.showErrorMessage(identifier);
@@ -119,9 +137,8 @@ class FROMVALIDATION {
     }
 
     // function to handle email validation.
-    validateEmail(value, validator, required) {
+    validateEmail(value, required) {
         if (required == "true") {
-            let range = validator;
             if (value != "" && value != null && value.length > 3 && value.match(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)$/)) {
                 this.email = value;
                 return false;
@@ -134,9 +151,8 @@ class FROMVALIDATION {
     }
 
     // function to handle number validation.
-    validateNumber(value, validator, required) {
+    validateNumber(value, required) {
         if (required == "true") {
-            let range = validator;
             if (value != "" && value != null && value.length > 10 && value.match(/^\+91 +[0-9]{10}$/)) {
                 this.number = value;
                 return false;
@@ -163,9 +179,9 @@ class FROMVALIDATION {
         }
     }
 
-    validateRadio(value, validator, required) {
+    // function to validate gender.
+    validateRadio(value, required) {
         if (required == "true") {
-            let range = validator;
             if (value === "male" || value === "female") {
                 this.gender = value;
                 return false;
@@ -177,13 +193,33 @@ class FROMVALIDATION {
         }
     }
 
+    // function to check subscription.
+    validateSubscription(element) {
+        if (element.checked) {
+            this.subscription = element.checked;
+        }
+    }
+
+    // function to validate prefession.
+    validateProfession(value, required) {
+        if (required == "true") {
+            if (value != "") {
+                this.profession = value;
+                return false;
+            }
+            else {
+                this.profession = null;
+                return true;
+            }
+        }
+    }
+
     // function to show error message.
     showErrorMessage(inpType) {
         const error = this.errorMessageObj[inpType].errorMsg;
         const element = this.errorMessageObj[inpType].element;
 
         if (!error) {
-
             if (!element.classList.contains("valid")) {
                 element.classList.remove("invalid");
                 element.classList.add("valid");
@@ -208,7 +244,7 @@ class FROMVALIDATION {
     // enable and disable button;
     buttonEvent(btn) {
         btn.addEventListener("mouseover", () => {
-            if (this.name != null && this.email != null && this.number != null && this.gender != null && this.message != null) {
+            if (this.name != null && this.email != null && this.number != null && this.gender != null && this.message != null && this.profession != null) {
                 this.button.classList.remove("not-allowed")
             }
             else {
@@ -220,7 +256,7 @@ class FROMVALIDATION {
     formSubmitEvent(btn) {
         btn.addEventListener("click", (evt) => {
             evt.preventDefault();
-            if (this.name != null && this.email != null && this.number != null && this.gender != null && this.message != null) {
+            if (this.name != null && this.email != null && this.number != null && this.gender != null && this.message != null && this.profession != null) {
                 setTimeout(() => {
                     if (this.errorBlock != null) {
                         if (this.errorBlock.style.display != "block") {
@@ -238,7 +274,7 @@ class FROMVALIDATION {
                 }, 100)
                 this.form.requestSubmit();
             }
-            else if (this.name == null || this.email == null || this.number == null || this.gender == null || this.message == null) {
+            else if (this.name == null || this.email == null || this.number == null || this.gender == null || this.message == null || this.profession == null) {
                 return false;
             }
         })
