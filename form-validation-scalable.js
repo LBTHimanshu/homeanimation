@@ -256,13 +256,20 @@ class FROMVALIDATION {
 
     // enable and disable button;
     buttonEvent(btn) {
+        let parentElement = btn.parentElement;
+        let tooltip = parentElement.querySelector(".tooltip");
         btn.addEventListener("mouseover", () => {
             if (this.name != null && this.email != null && this.number != null && this.gender != null && this.message != null && this.profession != null) {
-                this.button.classList.remove("not-allowed")
+                this.button.classList.remove("not-allowed");
+                tooltip.classList.remove("open");
             }
             else {
                 this.button.classList.add("not-allowed");
+                tooltip.classList.add("open");
             }
+        })
+        btn.addEventListener("mouseout", () => {
+                tooltip.classList.remove("open");
         })
     }
     // form submit event.
