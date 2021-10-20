@@ -3,7 +3,7 @@ class ANIMATE {
         this.container = document.querySelector(".image-container");
         this.wrapper = document.querySelectorAll(".image-wrapper");
         this.imageBlock = null;
-        this.imageLength = 0;
+        this.imageLength = 1;
         this.counter = 0;
         this.topVal = 0;
         this.Img = [];
@@ -40,7 +40,7 @@ class ANIMATE {
     //     for (let i = 0; i < this.wrapper.length; i++) {
     //         imgArr = gsap.utils.shuffle(img);
     //         this.wrapper[i].appendChild(imgArr[i]);
-            
+
     //     }
     // }
     addImageToWrapper() {
@@ -54,29 +54,34 @@ class ANIMATE {
         this.imageBlock = this.wrapper[0].querySelectorAll(".cust-image");
         setInterval(() => {
             if (this.counter == this.wrapper.length) {
+                console.log("2")
                 this.counter = 0;
                 this.topVal -= 120;
                 this.imageLength++
-                this.startAnimation(this.counter, this.topVal)
+                // this.startAnimation(this.counter, this.topVal)
             }
             if (this.imageLength == this.imageBlock.length) {
+                console.log("3")
                 this.counter = 0;
                 this.topVal = 120;
                 this.imageLength = 0;
-                this.startAnimation(this.counter, this.topVal)
+                // this.startAnimation(this.counter, this.topVal)
             }
+            else{
+                console.log("1")
                 this.startAnimation(this.counter, this.topVal);
                 this.counter++;
-        }, 2000)
+            }
+        }, 1000)
     }
 
     startAnimation(count, val) {
         let block = this.wrapper[count];
         let timeline = gsap.timeline()
-        if (this.imageLength != 0) {
-            timeline.to(block, { y: (val - 120) + "%", duration: 1 });
-        }
-        timeline.restart();
+        // if (this.imageLength != 0) {
+        timeline.to(block, { y: (val - 120) + "%", duration: 1 });
+        // }
+        // timeline.restart();
 
     }
 
