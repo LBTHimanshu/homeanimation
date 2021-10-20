@@ -10,15 +10,26 @@ class WORKFLOW {
         };
         this.init();
     }
-
     init() {
         this.wrapper.innerHTML = "";
         this.catBlockEle.innerHTML = "";
         this.topHead.innerHTML = "";
+        this.nicheData = null;
+        this.categoryData = null;
+        this.url = (new URL(document.location)).searchParams;
+        this.filterDataFromUrl(this.url)
         this.loadNiches();
-        this.listenToEvent();
+        this.listenToEvent(this.nicheData);
+        this.addListener();
     }
 
+    // filter url data
+    filterDataFromUrl(url){
+        if(url.get("cate")&&url.get("niche")){
+            this.categoryData = url.get("cate");
+            this.nicheData = url.get("niche");
+        }
+    }
     // load the niches into DOM;
     loadNiches() {
         this.appData.nicheData.forEach((niche) => {
@@ -28,7 +39,6 @@ class WORKFLOW {
             </div>`;
         })
     }
-
     // filter out cards based on categories.
     renderFiltered(showOnNiche) {
         this.wrapper.innerHTML = '';
@@ -39,13 +49,12 @@ class WORKFLOW {
             this.loadWrapper(headHtml, cardContainerHtml, category);
         })
     }
-
     // function to load cards.
     loadCards(data, categoryName, nicheName) {
         const CARDHTML = data.filter((card) => card.showOn === categoryName && card.showOnNiche === nicheName).map((card) => {
             if (card != null) {
                 return `<a href="https://element5.webflow.io/workflow-category-items/${card.link}" role="listitem" class="workflow-card">
-            <img src=${card.cardImgSrc} loading="lazy" alt="" class="workflow-card-img">
+        <img src=${card.cardImgSrc} loading="lazy" alt="" class="workflow-card-img">
             <p class="para-16 workflow-card-head">${card.cardName}</p>
             <p class="para-16 workflow-card-para">${card.cardDetails}</p>
             <p class="know-more-link card-link">Know More</p>
@@ -54,14 +63,12 @@ class WORKFLOW {
         });
         return CARDHTML;
     }
-
     // function to load heading of the card container.
     loadHead(category, showOnNiche) {
         if (category.showOnNiche == showOnNiche) {
             return `<div class="right-top-block"><h2 class="workflow-heading">${category.categoryTitle}</h2><p class="para-16 width-60">${category.categoryDesc}</p></div>`;
         }
     }
-
     // function to add cards and heading into the container.
     loadCardContainer(cards) {
         if (cards.length != 0) {
@@ -73,7 +80,6 @@ class WORKFLOW {
             return container;
         }
     }
-
     // function to add card container and head container into a wrapper:
     loadWrapper(headHtml, cardContainer, category) {
         if (headHtml != undefined && cardContainer != undefined) {
@@ -99,9 +105,7 @@ class WORKFLOW {
                 }
             })
         }
-
     }
-
     // function to listen card events
     cardEvents() {
         let cards = document.querySelectorAll(".workflow-card")
@@ -118,12 +122,18 @@ class WORKFLOW {
             })
         })
     };
-
     // function to listen to events.
-    listenToEvent() {
+    listenToEvent(data) {
         let headBlock = document.querySelectorAll(".head-para");
-        headBlock[0].classList.add("active");
-        this.categoryFilter(headBlock[0].id);
+        if(data){
+            let activeNiche = document.getElementById(data);
+            activeNiche.classList.add("active");
+            this.categoryFilter(activeNiche.id);
+            this.nicheData = null;
+        }else{
+            headBlock[0].classList.add("active");
+            this.categoryFilter(headBlock[0].id);
+        }
         this.topHead.addEventListener("click", (e) => {
             if (e.target.dataset.head == "niche") {
                 let id = e.target.id;
@@ -134,17 +144,16 @@ class WORKFLOW {
                     }
                     e.target.classList.add("active")
                 })
+                this.addListener();
             }
         });
     }
-
     // filter out categories based on niches.
     categoryFilter(id) {
         const CATHTML = this.getCategoryDom(this.appData.categoryData, id);
-        this.loadCategoryDom(CATHTML);
         this.renderFiltered(id);
+        this.loadCategoryDom(CATHTML, this.categoryData);
     }
-
     // get the niches DOM.
     getCategoryDom(data, categoryName) {
         const CATDOM = data.filter((category) => category.showOnNiche === categoryName).map((category) => {
@@ -152,31 +161,62 @@ class WORKFLOW {
         });
         return CATDOM;
     }
-
     // load DOM into Container.
-    loadCategoryDom(Dom) {
+    loadCategoryDom(Dom, category) {
         this.catBlockEle.innerHTML = '';
         Dom.forEach(ele => {
             this.catBlockEle.innerHTML += ele;
         })
         let catBlock = document.querySelectorAll(".categories-block.flexbox");
         if (catBlock.length != 0) {
-            catBlock[0].classList.add("active-left-border");
-            catBlock[0].children[1].classList.add("active-para");
+            if(category){
+                let activeCat = document.querySelector(`[data-id = ${category}]`);
+                activeCat.classList.add("active-left-border");
+                activeCat.children[1].classList.add("active-para");
+                this.scrollFromTop(category);
+                this.categoryData = null;
+            }
+            else{
+                catBlock[0].classList.add("active-left-border");
+                catBlock[0].children[1].classList.add("active-para");
+            }
             catBlock.forEach(cat => {
                 cat.addEventListener("click", (eve) => {
-                    this.removeActive(eve);
-                    cat.children[1].classList.add("active-para")
                     let id = eve.currentTarget.dataset.id;
                     this.scrollFromTop(id);
                 })
             })
         }
-
     }
-
+    addListener() {
+        let wrapperBlock = document.querySelectorAll(".right-workflow-wrapper");
+        wrapperBlock.forEach(wrapper => {
+            this.observeScroll(wrapper)
+        })
+    }
+    observeScroll(wrapper) {
+        this.observer = new IntersectionObserver((wrapper) => {
+            if (wrapper[0]['isIntersecting'] == true) {
+                let elID = wrapper[0].target.id;
+                this.activateCategory(elID);
+            }
+        }, { root: null, threshold: 0, rootMargin: '-200px' });
+        this.observer.observe(wrapper);
+    }
+    activateCategory(id) {
+        document.querySelectorAll(".categories-block.flexbox").forEach(cat => {
+            if (cat.classList.contains("active-left-border")) {
+                cat.classList.remove("active-left-border");
+                cat.children[1].classList.remove("active-para");
+            }
+            if (cat.dataset.id == id) {
+                cat.classList.add("active-left-border");
+                cat.children[1].classList.add("active-para");
+            }
+        })
+    }
     // scroll the page when clicked on any category.
-    scrollFromTop(id){
+    scrollFromTop(id) {
         let el = document.getElementById(id);
         let elDistanceToTop = window.pageYOffset + el.getBoundingClientRect().top;
         window.scrollTo({
@@ -184,19 +224,17 @@ class WORKFLOW {
             behavior: 'smooth'
         });
     }
-
     // add the left border into the categories.
     removeActive(eve) {
         let box = eve.currentTarget.closest(".flexbox");
         document.querySelectorAll(".categories-block.flexbox").forEach(cat => {
             if (cat.classList.contains("active-left-border") && (cat.children[1].classList.contains("active-para"))) {
                 cat.classList.remove("active-left-border");
-                cat.children[1].classList.remove("active-para")
+                cat.children[1].classList.remove("active-para");
             }
         })
         box.classList.add("active-left-border");
     }
 
 }
-
 new WORKFLOW;
