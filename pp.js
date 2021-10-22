@@ -1,4 +1,5 @@
 var resizeTimer;
+var tableContent;
 function isInViewportCenter(element) {
     const rect = element.getBoundingClientRect();
     return (
@@ -11,7 +12,7 @@ function isInViewportCenter(element) {
 }
 
 function activateCategory(id) {
-    const tableContent = document.querySelectorAll('.sub-title');
+    tableContent = document.querySelectorAll('.sub-title');
     tableContent.forEach(cat => {
         if (cat.classList.contains("active")) {
             cat.classList.remove("active");
@@ -23,17 +24,14 @@ function activateCategory(id) {
 }
 
 $(window).on("scroll", function () {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function () {
+    // clearTimeout(resizeTimer);
+    // resizeTimer = setTimeout(function () {
         [...$(".content-wrapper h2")].forEach((ele) => {
             if (isInViewportCenter(ele)) {
-                if (
-                    ele.getBoundingClientRect().top >= 0 &&
-                    ele.getBoundingClientRect().top <= 125
-                ) {
+                if ( ele.getBoundingClientRect().top >= 0 && ele.getBoundingClientRect().top <= 125 ) {
                     activateCategory(ele.id)
                 }
             }
         });
-    }, 250);
+    // }, 50);
 });
