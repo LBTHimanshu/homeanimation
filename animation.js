@@ -5,44 +5,27 @@ class ANIMATE {
         this.imageBlock = null;
         this.imageLength = 1;
         this.counter = 0;
-        this.topVal = 0;
+        this.topVal = 4.8;
         this.Img = [];
+        this.randomVal = 0;
+        this.timeline;
+        this.duration = 0.5;
         this.init()
     }
 
     init() {
-        // this.Img = this.insertImage();
         this.addImageToWrapper();
         this.startCounter();
     }
 
     insertImage() {
         let imageHtml = "";
-        let ImgArr = gsap.utils.shuffle(LOGO);
-        ImgArr.forEach(element => {
+        let imgArr = gsap.utils.shuffle(LOGO); 
+        imgArr.forEach(element => {
             imageHtml += `<img src="${element.image}" loading="lazy" alt="${element.name}" sizes="(max-width: 479px) 13vw, (max-width: 767px) 15vw, (max-width: 991px) 16vw, 18vw" class="cust-image">`;
         });
         return imageHtml;
     }
-    // insertImage(img) {
-    //     const imageHtml = img.map(element => {
-    //         let imgHtml = document.createElement("img");
-    //         imgHtml.classList.add("cust-image");
-    //         imgHtml.src = element.image;
-    //         imgHtml.alt = element.name;
-    //         return imgHtml;
-    //     });
-    //     return imageHtml;
-    // }
-
-    // addImageToWrapper(img) {
-    //     let imgArr;
-    //     for (let i = 0; i < this.wrapper.length; i++) {
-    //         imgArr = gsap.utils.shuffle(img);
-    //         this.wrapper[i].appendChild(imgArr[i]);
-
-    //     }
-    // }
     addImageToWrapper() {
         this.wrapper.forEach((block) => {
             this.Img = this.insertImage()
@@ -53,38 +36,42 @@ class ANIMATE {
     startCounter() {
         this.imageBlock = this.wrapper[0].querySelectorAll(".cust-image");
         setInterval(() => {
-            if (this.counter == this.wrapper.length) {
-                console.log("2")
+            if (this.counter > this.wrapper.length) {
                 this.counter = 0;
-                this.topVal -= 120;
-                this.imageLength++
-                // this.startAnimation(this.counter, this.topVal)
+                this.imageLength++;
+                this.topVal = 4.8 * this.imageLength;
+                this.duration = 0.5;
             }
-            if (this.imageLength == this.imageBlock.length) {
-                console.log("3")
+            if (this.imageLength >= this.imageBlock.length) {
                 this.counter = 0;
-                this.topVal = 120;
+                this.topVal = 0;
                 this.imageLength = 0;
-                // this.startAnimation(this.counter, this.topVal)
+                this.duration = 0;
             }
-            else{
-                console.log("1")
-                this.startAnimation(this.counter, this.topVal);
-                this.counter++;
-            }
-        }, 1000)
+            this.randomVal = this.setRandomVal(this.imageBlock.length);
+            this.startAnimation(this.randomVal, this.topVal, this.duration);
+            this.counter++;
+        },500);
     }
 
-    startAnimation(count, val) {
-        let block = this.wrapper[count];
-        let timeline = gsap.timeline()
-        // if (this.imageLength != 0) {
-        timeline.to(block, { y: (val - 120) + "%", duration: 1 });
-        // }
-        // timeline.restart();
+    setRandomVal(length){
+        return(Math.floor((Math.random() * length) + 0));
+    }
 
+    startAnimation(count, val, dur) {
+        let block = this.wrapper[count];
+        this.timeline = gsap.timeline()
+        this.timeline.to(block, { y: -(val) + "em", duration: dur});
     }
 
 }
 
 new ANIMATE;
+
+
+// function scrollList(id) {
+//     let el = document.querySelector(`[data-id=${id}]`);
+//     el.scrollIntoView({ behavior: 'smooth',
+//     block: 'nearest',
+//     inline: 'start' });
+//   }
