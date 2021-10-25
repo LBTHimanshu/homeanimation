@@ -46,9 +46,7 @@ class AnimateBlock {
   }
   class ANIMATE {
     constructor(companyLogos, duration = 2) {
-      this.container = document.querySelector(".image-container");
       this.wrapper = document.querySelectorAll(".image-wrapper");
-      this.topVal = this.wrapper[0].querySelector(".cust-image").height;
       this.randomVal = 0;
       this.duration = duration;
       this.indexOfwrapper = 0;
@@ -89,17 +87,6 @@ class AnimateBlock {
     }
     startCounter() {
       setInterval(() => {
-        // this.lastCalled = this.randomVal;
-        // this.randomVal = this.setRandomVal(this.wrapper.length);
-        // console.log("last", this.lastCalled, this.randomVal);
-        // if (this.lastCalled && this.randomVal === this.lastCalled) {
-        //   this.randomVal++;
-        //   if (!this.aniFuncs[this.randomVal]) {
-        //     this.randomVal--;
-        //   }
-        //   this.aniFuncs[this.randomVal].handleAni();
-        // }
-        // else
         this.checkIfNumRep();
         if (Array.isArray(this.aniFuncs) && this.aniFuncs[this.randomVal]) {
           this.aniFuncs[this.randomVal].handleAni();
@@ -112,8 +99,6 @@ class AnimateBlock {
       if (this.lastCalled && this.randomVal === this.lastCalled) {
         this.checkIfNumRep();
       }
-      console.log(this.lastCalled, this.randomVal);
-      // return this.randomVal;
     }
     setRandomVal(length) {
       let num = Math.floor(Math.random() * length);
