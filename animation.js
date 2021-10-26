@@ -56,7 +56,8 @@ class AnimateBlock {
     }
     init() {
       this.insertImage();
-      this.loopAndInit();
+      this.loopAndInit = this.loopAndInit.bind(this)
+      this.onImagesLoaded(this.loopAndInit);
     }
     loopAndInit() {
       this.aniFuncs = [...this.wrapper].map(
@@ -70,7 +71,7 @@ class AnimateBlock {
       });
       this.companyLogos.forEach((element) => {
         let imageHtml = document.createElement("img");
-        imageHtml.classList.add("cust-image");
+        imageHtml.classList.add("cust-img");
         imageHtml.src = element.image;
         imageHtml.alt = element.name;
         this.addImageToWrapper(imageHtml, this.indexOfwrapper);
@@ -110,7 +111,26 @@ class AnimateBlock {
         return this.setRandomVal(this.wrapper.length);
       }
     }
+    onImagesLoaded(event) {
+      var images = document.getElementsByClassName("cust-img");
+      var loaded = images.length;
+      for (var i = 0; i < images.length; i++) {
+        if (images[i].complete) {
+          loaded--;
+        } else {
+          images[i].addEventListener("load", function () {
+            loaded--;
+            if (loaded == 0) {
+              event();
+            }
+          });
+        }
+        if (loaded == 0) {
+          event();
+        }
+      }
+    }
   }
-  if (typeof LOGO !== "undefined") {
-    new ANIMATE(LOGO, 1);
-  }
+    if (typeof LOGO !== "undefined") {
+      new ANIMATE(LOGO, 1);
+    }
