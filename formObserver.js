@@ -1,26 +1,27 @@
+function observeBehaviour(){
+  console.log("working")
+}
 const Forms = {
-  "form-1": ".from-block",
-  "form-2": "[data='form-two']",
-  "form-3": "#form-3",
+  ".from-block": observeBehaviour,
+  "[data='form-two']": observeBehaviour,
+  "#form-3": observeBehaviour,
 }
 const formParents = [];
 
-Object.values(Forms).forEach(function(formId){
+Object.keys(Forms).forEach(function (formId) {
   let FormEle = document.querySelector(formId);
-  formParents.push(FormEle.parentElement);
-  FormEle.addEventListener("formSub", (e) => {
-    console.log("triggered", e.detail);
-    e.detail()
-  });
+  if (FormEle !== null) {
+    formParents.push(FormEle.parentElement);
+    FormEle.addEventListener("formSub", (e) => {
+      if (e.success == true) {
+        Forms[formId]();
+      }
+    });
+  }
 })
 
-function observeBehaviour(){
-  console.log("observing")
-}
 
-const formSubEvt = new CustomEvent("formSub", {
-  detail: observeBehaviour,
-});
+const formSubEvt = new CustomEvent("formSub", { detail: true });
 
 // Options for the observer (which mutations to observe)
 const config = { attributes: true, childList: true, subtree: true };
@@ -35,6 +36,7 @@ const callback = function (mutationsList, observer) {
       const formData = new FormData($form);
 
       formSubEvt.formData = formData;
+      formSubEvt.success = true;
       $form.dispatchEvent(formSubEvt);
     }
   }
