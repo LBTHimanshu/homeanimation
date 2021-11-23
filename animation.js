@@ -9,6 +9,8 @@ class AnimateBlock {
       this.currImg = 1;
       this.allMoved = false;
       this.action = "moveup";
+      this.allImagesLength = document.querySelectorAll(".cust-img").length;
+      this.ani = gsap.timeline();
     }
     handleAni() {
       if (this.currImg < this.childImgLength && this.action === "moveup") {
@@ -20,12 +22,11 @@ class AnimateBlock {
         (this.currImg < this.childImgLength && this.currImg > 0)
       ) {
           this.currImg = 1;
+          this.action = "moveup";
           this.allMoved = true;
-          this.movedVal = 0;
-          // this.positionAni();
-          this.allMoved = true;
-        }
-     else {
+          this.movedVal += this.topVal
+          this.positionAni();
+      } else {
         this.action = "moveup";
         this.currImg = 1;
         this.movedVal = 0;
@@ -33,23 +34,28 @@ class AnimateBlock {
       }
     }
     positionAni() {
-      // if(!this.allMoved){
-        // console.log("if")
-        gsap.to(this.block, {
+      if(!this.allMoved){
+        this.ani.to(this.block, {
         y: -this.movedVal,
+        delay: this.delay,
         duration: this.aniDuration,
         ease: "Power1.easeInOut",
       })
-    // }
-      // else{
-      //   console.log("else")
-      //   // gsap.to(".image-wrapper", {
-      //   //   y: 0,
-      //   //   duration: 0,
-      //   //   ease: "Power1.easeInOut",
-      //   // })
-      //   this.allMoved = true;
-      // }
+    }else{
+      this.ani.to(".image-wrapper", {
+          y: -this.movedVal,
+          opacity: 0,
+          duration: 0.8,
+          ease: "Power1.easeInOut",
+        }).to(".image-wrapper", {
+          y:0,
+          duration: 0,
+        }).to(".image-wrapper", {
+          opacity: 1,
+          duration: 0.3,
+          ease: "circ.out",
+        });
+      }
     }
   }
   class ANIMATE {
@@ -58,7 +64,6 @@ class AnimateBlock {
       this.randomVal = 0;
       this.duration = duration;
       this.indexOfwrapper = 0;
-      // this.checkRandom = [];
       this.oddNum = [];
       this.evenNum = [];
       this.evenFirst = true;
@@ -100,50 +105,33 @@ class AnimateBlock {
     }
     startCounter() {
       this.storeNumbers(this.wrapper.length);
-      this.timerId = setInterval(() => {
-        // this.checkIfNumRep();
+      const intervalId = setInterval(() => {
         this.getNumber();
-        if (Array.isArray(this.aniFuncs) && this.aniFuncs[this.randomVal]) {
-          if(!this.checkIfMoved()){
-            console.log("first time")
-            this.aniFuncs[this.randomVal].handleAni();
-          } 
-          else{
-            if(this.checkIfAllMoved()){
-              console.log("reset")
-              this.restart()
-            }
-            else{
-              this.checkAndHandleAni();
-            }
+        if (Array.isArray(this.aniFuncs) && this.aniFuncs[this.randomVal] && (!this.aniFuncs[this.randomVal].allMoved)) {
+          this.aniFuncs[this.randomVal].handleAni();
+          // below condition execute's when there is no image present inside the wrapper to move up.
+          if(this.aniFuncs[this.randomVal].allMoved){
+            // reset all the values and clearInterval.
+            this.randomVal = 0;
+            this.evenFirst = true;
+            this.sendWrapVal = 0;
+            this.aniFuncs[this.randomVal].allMoved = false;
+            this.evenNum = []
+            this.oddNum = []
+            clearInterval(intervalId);
+            this.checkInt();
           }
         }
       }, 1000);
     }
-    checkAndHandleAni(){
-      if(!this.checkIfMoved()){
-        this.getNumber();
-        this.aniFuncs[this.randomVal].handleAni();
+    checkInt(){
+      // function to start the animation again.
+      if (this.aniFuncs[this.randomVal]) {
+        this.loopAndInit();
       }
-      else{
-        this.randomVal % 2 == 0 ? this.evenNum.splice(this.evenNum.indexOf(this.randomVal, 1)) : this.oddNum.splice(this.oddNum.indexOf(this.randomVal, 1));
-        this.checkAndHandleAni();
-      }
-    }
-    checkIfMoved(){
-      return (this.aniFuncs[this.randomVal].allMoved)
-    }
-    checkIfAllMoved(){
-      const aniFound = this.aniFuncs.find(obj => obj.allMoved === false);
-      if(aniFound) {
-        return false;
-      }
-      return true;
-    }
-    stopCounter(){
-      this.timerId && clearInterval(this.timerId)
     }
     getNumber() {
+      // return 3 times even numbers and 3 times odds.
       if(this.evenFirst){
         if (this.sendWrapVal != this.evenNum.length) {
           this.randomVal = this.evenNum[this.sendWrapVal];
@@ -166,22 +154,6 @@ class AnimateBlock {
           this.getNumber();
         }
       }
-      if (this.oddNum.length === 0 && this.evenNum.length === 0) {
-        console.log()
-        this.restart();
-      }
-    }
-    restart(){
-      this.stopCounter(this.timerId);
-      this.aniFuncs.forEach(obj => {
-        obj.allMoved = false
-      })
-        gsap.to(".image-wrapper", {
-          y: 0,
-          duration: 0,
-          ease: "Power1.easeInOut",
-        })
-        this.startCounter();
     }
     storeNumbers(length){
       for (let num = 0; num < length; num++) {
@@ -193,23 +165,6 @@ class AnimateBlock {
       }
     }
   }
-    // checkIfNumRep() {
-    //   this.lastCalled = this.randomVal;
-    //   this.randomVal = this.setRandomVal(this.wrapper.length);
-    //   if (this.lastCalled && this.randomVal === this.lastCalled) {
-    //     this.checkIfNumRep();
-    //   }
-    // }
-    setRandomVal(length) {
-      let num = Math.floor(Math.random() * length);
-      if (!this.checkRandom.includes(num) && this.checkRandom.length <= length) {
-        this.checkRandom.push(num);
-        return num;
-      } else {
-        this.checkRandom.length = 0;
-        return this.setRandomVal(this.wrapper.length);
-      }
-    }
     onImagesLoaded(event) {
       var images = document.getElementsByClassName("cust-img");
       var loaded = images.length;
